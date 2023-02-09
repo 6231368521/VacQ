@@ -74,7 +74,7 @@ exports.updateHospital = async (req, res, next) => {
 //@access   Private
 exports.deleteHospital = async (req, res, next) => {
     try {
-        const hospital = await Hospital.findByIdAndDelete(req.paramd.id);
+        const hospital = await Hospital.findByIdAndDelete(req.param.id);
 
         if (!hospital) {
             return res.status(400).json({success: false});

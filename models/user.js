@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: ['user', 'admin'],
-        default: user,
+        default: 'user',
     },
     password: {
         type: String,
@@ -33,18 +33,18 @@ const UserSchema = new mongoose.Schema({
 });
 
 //Encrypt password with bcrypt
-UserSchema.pre('save', async (next) => {
+UserSchema.pre('save', async function(next) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
 });
 
 //Sign JWT and return
-UserSchema.methods.getSignedJwtToken = () => {
+UserSchema.methods.getSignedJwtToken = function() {
     return jwt.sign({id: this._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRE});
 }
 
 //Match user entered password to hashed password in database
-UserSchema.methods.matchPassword = async (enteredPassword) => {
+UserSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 }
 

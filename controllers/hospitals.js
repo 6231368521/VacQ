@@ -5,7 +5,6 @@ const Hospital = require('../models/hospital');
 //@access   Public
 exports.getHospitals = async (req, res, next) => {
     let query;
-    console.log("Query ", req.query);
     //Copy reqQuery
     const reqQuery = {...req.query};
 
@@ -20,9 +19,7 @@ exports.getHospitals = async (req, res, next) => {
     let queryStr = JSON.stringify(reqQuery);
 
     //Create operators ($gt, $gte, etc.)
-    console.log("Before regex: ", queryStr);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
-    console.log("After regex: ", queryStr);
 
     //finding resource
     query = Hospital.find(JSON.parse(queryStr)).populate('appointments');
@@ -38,7 +35,7 @@ exports.getHospitals = async (req, res, next) => {
         const sortBy = req.query.sort.split(',').join(' ');
         query = query.sort(sortBy);
     } else {
-        query = query.sort('-createdAt');
+        query = query.sort('-createdAt _id');
     }
 
     //Pagination
@@ -47,7 +44,8 @@ exports.getHospitals = async (req, res, next) => {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const total = await Hospital.countDocuments();
-
+    console.log("startIndex",startIndex);
+    console.log("limit", limit);
     query = query.skip(startIndex).limit(limit);
 
     //Pagination results

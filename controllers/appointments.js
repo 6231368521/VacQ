@@ -8,18 +8,35 @@ const Hospital = require('../models/hospital');
 exports.getAppointments = async (req, res, next) => {
     let query;
     let hospitalId = req.params.hospitalId;
-    //General users can only see their appointments
-    if (req.user.role !== 'Admin') {
-        query = Appointment.find({user: req.user.id, hospital: hospitalId}).populate({
-            path: 'hospital',
-            select: 'name province tel'
-        });
+    
+    if (hospitalId) {
+        //General users can only see their appointments
+        if (req.user.role !== 'Admin') {
+            query = Appointment.find({user: req.user.id, hospital: hospitalId}).populate({
+                path: 'hospital',
+                select: 'name province tel'
+            });
+        } else {
+            //If you are admin, you can see all
+            query = Appointment.find({hospital: hospitalId}).populate({
+                path: 'hospital',
+                select: 'name province tel'
+            });
+        }
     } else {
-        //If you are admin, you can see all
-        query = Appointment.find({hospital: hospitalId}).populate({
-            path: 'hospital',
-            select: 'name province tel'
-        });
+        //General users can only see their appointments
+        if (req.user.role !== 'Admin') {
+            query = Appointment.find({user: req.user.id}).populate({
+                path: 'hospital',
+                select: 'name province tel'
+            });
+        } else {
+            //If you are admin, you can see all
+            query = Appointment.find().populate({
+                path: 'hospital',
+                select: 'name province tel'
+            });
+        }
     }
 
     try {

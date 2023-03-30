@@ -2,13 +2,14 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
+const cors = require('cors');
 
 dotenv.config({path:'./config/config.env'});
 
 connectDB();
 
 const app = express();
-
+app.use(cors());
 //Body parser
 app.use(express.json());
 //Cookie parser
